@@ -5,8 +5,8 @@
 
 USING_NS_CC;
 
-CCSprite* GameLayer::background1 = NULL;
-CCSprite* GameLayer::background2 = NULL;
+Sprite* GameLayer::background1 = NULL;
+Sprite* GameLayer::background2 = NULL;
 //背景滚动
 void GameLayer::backgroundMove(float dt)
 {
@@ -24,22 +24,22 @@ bool GameLayer::init()
 	bool bRet=false;
     do
     {
-        CC_BREAK_IF(!CCLayer::init());
+        CC_BREAK_IF(!Layer::init());
 		this->setTouchEnabled(true); 
  
         //png加入全局cache中
-		CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile(ResourceGame::back_ground_list);
+		SpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile(ResourceGame::back_ground_list);
          
-        //加载background1，background1和background2是CCSprite*型成员变量
-		//background1=CCSprite::createWithSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("background.png"));
-		background1=CCSprite::create(ResourceGame::back_ground_path);
+        //加载background1，background1和background2是Sprite*型成员变量
+		//background1=Sprite::createWithSpriteFrame(SpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("background.png"));
+		background1=Sprite::create(ResourceGame::back_ground_path);
         background1->setAnchorPoint(ccp(0,0));
         background1->setPosition(ccp(0,0));
         this->addChild(background1);
  
         //加载background2
-        //background2=CCSprite::createWithSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("background.png"));
-        background2 = CCSprite::create(ResourceGame::back_ground_path);
+        //background2=Sprite::createWithSpriteFrame(SpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("background.png"));
+        background2 = Sprite::create(ResourceGame::back_ground_path);
 		background2->setAnchorPoint(ccp(0,0));
         background2->setPosition(ccp(0,background2->getContentSize().height-2));//这里减2的目的是为了防止图片交界的黑线
  
@@ -60,51 +60,53 @@ bool GameLayer::init()
 }
 
 
-void GameLayer::menuCloseCallback(CCObject* pSender)
+void GameLayer::menuCloseCallback(Object* pSender)
 {
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
-	CCMessageBox("You pressed the close button. Windows Store Apps do not implement a close button.","Alert");
+#if (_TARGET_PLATFORM == _PLATFORM_WINRT) || (_TARGET_PLATFORM == _PLATFORM_WP8)
+	MessageBox("You pressed the close button. Windows Store Apps do not implement a close button.","Alert");
 #else
-    CCDirector::sharedDirector()->end();
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    Director::sharedDirector()->end();
+#if (_TARGET_PLATFORM == _PLATFORM_IOS)
     exit(0);
 #endif
 #endif
 }
 
-//GameLayer.cpp  
-bool GameLayer::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)  
+ void GameLayer::onEnter() 
+ {
+   	Layer::onEnter();
+	auto listener =  EventListenerTouchOneByOne::create();//创建一个触摸监听
+    listener->setSwallowTouches(true);//设置是否想下传递触摸
+
+    listener->onTouchBegan = CC_CALLBACK_2(GameLayer::OnContactBegin, this);
+    listener->onTouchMoved = CC_CALLBACK_2(GameLayer::OnTouchMoved, this);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listener,10);
+ }
+
+bool GameLayer::OnContactBegin(Touch* touch, Event* event)  
 {  
     return true;//表示当前层接收触摸事件处理  
 }  
-  
-void GameLayer::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)  
+void GameLayer::OnTouchMoved(Touch* touch, Event* event)  
 {  
-	if (this->planeLayer->isAlive)
-	{
-		CCPoint beginPoint=pTouch->getLocationInView(); 
-		beginPoint=CCDirector::sharedDirector()->convertToGL(beginPoint); 
-		//juggle the area of drag 
-		CCRect planeRect=this->planeLayer->getChildByTag(ResourceGame::AIRPLANE)->boundingBox();
-		planeRect.origin.x-=15;
-		planeRect.origin.y-=15;
-		planeRect.size.width+=30;
-		planeRect.size.height+=30;
-		if(planeRect.containsPoint(this->getParent()->convertTouchToNodeSpace(pTouch))) 
-		{ 
-			CCPoint endPoint=pTouch->getPreviousLocationInView(); 
-			endPoint=CCDirector::sharedDirector()->convertToGL(endPoint); 
+	  if (this->planeLayer->isAlive)
+	  {
+		  Point beginPoint=touch->getLocationInView(); 
+		  beginPoint=Director::sharedDirector()->convertToGL(beginPoint); 
+		  //juggle the area of drag 
+		  Rect planeRect=this->planeLayer->getChildByTag(ResourceGame::AIRPLANE)->boundingBox();
+		  planeRect.origin.x-=15;
+		  planeRect.origin.y-=15;
+		  planeRect.size.width+=30;
+		  planeRect.size.height+=30;
+		  if(planeRect.containsPoint(this->getParent()->convertTouchToNodeSpace(touch))) 
+		  { 
+			  Point endPoint=touch->getPreviousLocationInView(); 
+			  endPoint=Director::sharedDirector()->convertToGL(endPoint); 
 
-			CCPoint offSet =ccpSub(beginPoint,endPoint);
-			CCPoint toPoint=ccpAdd(this->planeLayer->getChildByTag(ResourceGame::AIRPLANE)->getPosition(),offSet); 
-			this->planeLayer->MoveTo(toPoint); 
-		} 
-	} 
+			  Point offSet =ccpSub(beginPoint,endPoint);
+			  Point toPoint=ccpAdd(this->planeLayer->getChildByTag(ResourceGame::AIRPLANE)->getPosition(),offSet); 
+			  this->planeLayer->MoveTo(toPoint); 
+		  } 
+	  } 
 }  
-
-void GameLayer::registerWithTouchDispatcher()  
-{  
-    CCDirector *pDirector=CCDirector::sharedDirector();  
-    pDirector->getTouchDispatcher()->addTargetedDelegate(this,0,true);  
-} 
-

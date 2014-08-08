@@ -6,7 +6,7 @@
 USING_NS_CC;
 
 //PlaneLayer.h
-class PlaneLayer :public CCLayer
+class PlaneLayer :public Layer
 {
 public:
  
@@ -16,7 +16,7 @@ public:
  
     static PlaneLayer* create();//ÊµÏÖcreateº¯Êý
 
-	void MoveTo(CCPoint location);
+	void MoveTo(Point location);
  
     virtual bool init();
  

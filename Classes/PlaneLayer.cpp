@@ -24,29 +24,29 @@ bool PlaneLayer::init()
     bool bRet=false;
     do
     {
-        CC_BREAK_IF(!CCLayer::init());
+        CC_BREAK_IF(!Layer::init());
          
-        CCSize winSize=CCDirector::sharedDirector()->getWinSize();
+        Size winSize=Director::sharedDirector()->getWinSize();
  
-        //创建飞机精灵前要先调用CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("shoot.plist");加载全局资源
+        //创建飞机精灵前要先调用SpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("shoot.plist");加载全局资源
         //我把这个调用plist放到welcome.cpp中了。不然plane会空指针。 
-		CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile(ResourceGame::shoot_list);
-        CCSprite* plane=CCSprite::create(ResourceGame::hero_path);
+		SpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile(ResourceGame::shoot_list);
+        Sprite* plane=Sprite::create(ResourceGame::hero_path);
         plane->setPosition(ccp(winSize.width/2,plane->getContentSize().height/2));//飞机放置在底部中央
 		this->addChild(plane,0,ResourceGame::AIRPLANE);//添加精灵，AIRPLANE是tag
  
-        CCBlink *blink=CCBlink::create(1,3);//闪烁动画
+        Blink *blink=Blink::create(1,3);//闪烁动画
  
-        CCAnimation* animation=CCAnimation::create();
+        Animation* animation=Animation::create();
         animation->setDelayPerUnit(0.1f);
-		CCSpriteFrame* sf_1 = CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName(ResourceGame::hero_1_key);
-		CCSpriteFrame* sf_2 = CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName(ResourceGame::hero_2_key);
+		SpriteFrame* sf_1 = SpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName(ResourceGame::hero_1_key);
+		SpriteFrame* sf_2 = SpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName(ResourceGame::hero_2_key);
         animation->addSpriteFrame(sf_1);
         animation->addSpriteFrame(sf_2);
-        CCAnimate* animate=CCAnimate::create(animation);//帧动画
+        Animate* animate=Animate::create(animation);//帧动画
          
         plane->runAction(blink);//执行闪烁动画
-        plane->runAction(CCRepeatForever::create(animate));// 执行帧动画
+        plane->runAction(RepeatForever::create(animate));// 执行帧动画
  
         bRet=true;
     } while (0);
@@ -54,15 +54,15 @@ bool PlaneLayer::init()
     return bRet;
 }
 
-void PlaneLayer::MoveTo(CCPoint location)
+void PlaneLayer::MoveTo(Point location)
 {
 	//飞机及游戏状态判断  
-    if(isAlive && !CCDirector::sharedDirector()->isPaused())  
+    if(isAlive && !Director::sharedDirector()->isPaused())  
     {  
         //进行边界判断,不可超出屏幕  
-        CCPoint actualPoint;  
-        CCSize winSize=CCDirector::sharedDirector()->getWinSize();  
-        CCSize planeSize=this->getChildByTag(ResourceGame::AIRPLANE)->getContentSize();  
+        Point actualPoint;  
+        Size winSize=Director::sharedDirector()->getWinSize();  
+        Size planeSize=this->getChildByTag(ResourceGame::AIRPLANE)->getContentSize();  
         if (location.x<planeSize.width/2)  
         {  
             location.x=planeSize.width/2;  

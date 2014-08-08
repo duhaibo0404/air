@@ -10,7 +10,7 @@ BulletLayer::BulletLayer(void)
 	//bulletSpriteFrame=NULL;
 	bulletBatchNode=NULL;
 
-	m_pAllBullet=CCArray::create();
+	m_pAllBullet=Array::create();
 	m_pAllBullet->retain();
 }
 
@@ -25,12 +25,12 @@ bool BulletLayer::init()
 	bool bRet=false;
 	do 
 	{
-		CC_BREAK_IF(!CCLayer::init());
+		CC_BREAK_IF(!Layer::init());
 
-		//bulletSpriteFrame=CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("bullet1.png");
+		//bulletSpriteFrame=SpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("bullet1.png");
 
-		CCTexture2D *texture = CCTextureCache::sharedTextureCache()->textureForKey("ui/shoot.png");
-		bulletBatchNode = CCSpriteBatchNode::createWithTexture(texture);
+		Texture2D *texture = TextureCache::sharedTextureCache()->textureForKey("ui/shoot.png");
+		bulletBatchNode = SpriteBatchNode::createWithTexture(texture);
 		this->addChild(bulletBatchNode);
 		StartShoot(0.1);
 		bRet=true;
@@ -40,7 +40,7 @@ bool BulletLayer::init()
 
 void BulletLayer::StartShoot(float delay)
 {
-	this->schedule(schedule_selector(BulletLayer::AddBullet),0.20f,kCCRepeatForever,delay);
+	this->schedule(schedule_selector(BulletLayer::AddBullet),0.20f,kRepeatForever,delay);
 }
 
 void BulletLayer::StopShoot()
@@ -51,34 +51,34 @@ void BulletLayer::StopShoot()
 void BulletLayer::AddBullet(float dt)
 {
 	//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("sound/bullet.mp3");
-	CCSprite* bullet=CCSprite::createWithSpriteFrameName("bullet1.png");
+	Sprite* bullet=Sprite::createWithSpriteFrameName("bullet1.png");
 	bulletBatchNode->addChild(bullet);
 	//this->addChild(bullet);
 	this->m_pAllBullet->addObject(bullet);
 
-	CCPoint planePosition=PlaneLayer::sharedPlane->getChildByTag(ResourceGame::AIRPLANE)->getPosition();
-	CCPoint bulletPosition=ccp(planePosition.x,planePosition.y+PlaneLayer::sharedPlane->getChildByTag(ResourceGame::AIRPLANE)->getContentSize().height/2);
+	Point planePosition=PlaneLayer::sharedPlane->getChildByTag(ResourceGame::AIRPLANE)->getPosition();
+	Point bulletPosition=ccp(planePosition.x,planePosition.y+PlaneLayer::sharedPlane->getChildByTag(ResourceGame::AIRPLANE)->getContentSize().height/2);
 	bullet->setPosition(bulletPosition);
     
-	float length=CCDirector::sharedDirector()->getWinSize().height+bullet->getContentSize().height/2-bulletPosition.y;
+	float length=Director::sharedDirector()->getWinSize().height+bullet->getContentSize().height/2-bulletPosition.y;
 	float velocity=320/1;//320pixel/sec
 	float realMoveDuration=length/velocity;
 
-	CCFiniteTimeAction* actionMove=CCMoveTo::create(realMoveDuration,ccp(bulletPosition.x,CCDirector::sharedDirector()->getWinSize().height+bullet->getContentSize().height/2));
-	CCFiniteTimeAction* actionDone=CCCallFuncN::create(this,callfuncN_selector(BulletLayer::bulletMoveFinished));
+	FiniteTimeAction* actionMove=MoveTo::create(realMoveDuration,ccp(bulletPosition.x,Director::sharedDirector()->getWinSize().height+bullet->getContentSize().height/2));
+	FiniteTimeAction* actionDone=CallFuncN::create(this,callfuncN_selector(BulletLayer::bulletMoveFinished));
 
-	CCSequence* sequence=CCSequence::create(actionMove,actionDone,NULL);
+	Sequence* sequence=Sequence::create(actionMove,actionDone,NULL);
 	bullet->runAction(sequence);
 }
 
-void BulletLayer::bulletMoveFinished(CCNode* pSender)
+void BulletLayer::bulletMoveFinished(Node* pSender)
 {
-	CCSprite* bullet=(CCSprite*)pSender;
+	Sprite* bullet=(Sprite*)pSender;
 	this->bulletBatchNode->removeChild(bullet,true);
 	this->m_pAllBullet->removeObject(bullet);
 }
 
-void BulletLayer::RemoveBullet(CCSprite* bullet)
+void BulletLayer::RemoveBullet(Sprite* bullet)
 {
 	if (bullet!=NULL)
 	{

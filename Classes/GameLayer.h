@@ -7,24 +7,24 @@
 
 USING_NS_CC;
 
-class GameLayer : public CCLayer
+class GameLayer : public Layer
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();  
     void backgroundMove(float dt);
     // a selector callback
-    void menuCloseCallback(CCObject* pSender);
+    void menuCloseCallback(Ref* pSender);
+    virtual void onEnter() override;
     
     // implement the "static node()" method manually
-    CREATE_FUNC(GameLayer);
-	//virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);//触摸开始调用  
-	//virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);//触摸移动调用	
-	//virtual void registerWithTouchDispatcher();
+    CREATE_FUNC(GameLayer); 
+	void OnTouchMoved(Touch* touch, Event* event);//触摸移动调用	
+    bool OnContactBegin(Touch* touch, Event* event); 
 
 public:
-	static cocos2d::CCSprite* background1;
-	static cocos2d::CCSprite* background2;
+	static cocos2d::Sprite* background1;
+	static cocos2d::Sprite* background2;
 
 	PlaneLayer* planeLayer;
 	BulletLayer* bulletLayer;

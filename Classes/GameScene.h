@@ -6,7 +6,7 @@
  
 USING_NS_CC;
  
-class GameScene :public CCScene
+class GameScene :public Scene
 {
 public:
      
@@ -15,6 +15,7 @@ public:
     ~GameScene(void);
  
     CREATE_FUNC(GameScene);
+    static GameScene* createWithPhysics();//ÊµÏÖcreateº¯Êý
  
     virtual bool init();
  

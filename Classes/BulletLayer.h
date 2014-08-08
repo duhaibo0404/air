@@ -5,8 +5,7 @@
 
 USING_NS_CC;
 
-class BulletLayer :
-	public CCLayer
+class BulletLayer :public Layer
 {
 public:
 
@@ -20,9 +19,9 @@ public:
 
 	void AddBullet(float dt);
 
-	void bulletMoveFinished(CCNode* pSender);
+	void bulletMoveFinished(Node* pSender);
 
-	void RemoveBullet(CCSprite* bullet);
+	void RemoveBullet(Sprite* bullet);
 
 	void StartShoot(float delay=0.0f);
 
@@ -30,11 +29,11 @@ public:
 
 public:
 
-	CCArray* m_pAllBullet;
+	Array* m_pAllBullet;
 
 	//CCSpriteFrame* bulletSpriteFrame;
 
-	CCSpriteBatchNode* bulletBatchNode;
+	SpriteBatchNode* bulletBatchNode;
 
 };
 
