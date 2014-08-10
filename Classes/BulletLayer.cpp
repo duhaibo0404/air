@@ -52,12 +52,23 @@ void BulletLayer::AddBullet(float dt)
 {
 	//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("sound/bullet.mp3");
 	Sprite* bullet=Sprite::createWithSpriteFrameName("bullet1.png");
+
+	Size sz = bullet->getContentSize();
+	auto body = PhysicsBody::createBox(sz);
+	bullet->setPhysicsBody(body);
+	bullet->setTag(BULLET_TYPE);
+	body->setDynamic(false);
+
+	body->setCategoryBitmask(1);    // 0001
+	body->setCollisionBitmask(1);   // 0001
+	body->setContactTestBitmask(1); // 0001
+
 	bulletBatchNode->addChild(bullet);
 	//this->addChild(bullet);
 	this->m_pAllBullet->addObject(bullet);
 
-	Point planePosition=PlaneLayer::sharedPlane->getChildByTag(ResourceGame::AIRPLANE)->getPosition();
-	Point bulletPosition=ccp(planePosition.x,planePosition.y+PlaneLayer::sharedPlane->getChildByTag(ResourceGame::AIRPLANE)->getContentSize().height/2);
+	Point planePosition = PlaneLayer::sharedPlane->getChildByTag(PLANE_TYPE)->getPosition();
+	Point bulletPosition = ccp(planePosition.x, planePosition.y + PlaneLayer::sharedPlane->getChildByTag(PLANE_TYPE)->getContentSize().height / 2);
 	bullet->setPosition(bulletPosition);
     
 	float length=Director::sharedDirector()->getWinSize().height+bullet->getContentSize().height/2-bulletPosition.y;

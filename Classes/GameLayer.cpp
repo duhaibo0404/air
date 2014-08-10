@@ -2,11 +2,13 @@
 #include "GameResource.h"
 #include "PlaneLayer.h"
 #include "BulletLayer.h"
+#include "EnemyLayer.h"
 
 USING_NS_CC;
 
 Sprite* GameLayer::background1 = NULL;
 Sprite* GameLayer::background2 = NULL;
+
 //背景滚动
 void GameLayer::backgroundMove(float dt)
 {
@@ -51,9 +53,12 @@ bool GameLayer::init()
 		this->bulletLayer=BulletLayer::create();
 		this->addChild(bulletLayer);
  
+		//加入敌机
+		this->enemyLayer = EnemyLayer::create();
+		this->addChild(enemyLayer);
+
         //执行任务计划，实现背景滚动
         this->schedule(schedule_selector(GameLayer::backgroundMove),0.01f);
- 
         bRet=true;
     } while (0);
     return bRet;
@@ -72,16 +77,70 @@ void GameLayer::menuCloseCallback(Object* pSender)
 #endif
 }
 
- void GameLayer::onEnter() 
- {
-   	Layer::onEnter();
-	auto listener =  EventListenerTouchOneByOne::create();//创建一个触摸监听
-    listener->setSwallowTouches(true);//设置是否想下传递触摸
+bool GameLayer::onContactBegin(PhysicsContact& contact)
+{
+    
+	auto sp_a = (Sprite*)contact.getShapeA()->getBody()->getNode();
+	int tag_a = sp_a->getTag();
 
-    listener->onTouchBegan = CC_CALLBACK_2(GameLayer::OnContactBegin, this);
-    listener->onTouchMoved = CC_CALLBACK_2(GameLayer::OnTouchMoved, this);
+	auto sp_b = (Sprite*)contact.getShapeB()->getBody()->getNode();
+	int tag_b = sp_b->getTag();
+
+	if (tag_a == BULLET_TYPE)
+	{
+		Node* data = (Node*)sp_b->getUserData();
+		switch (tag_b)
+		{
+			case ENEMY_TYPE_1:
+				this->enemyLayer->enemy1Blowup((Enemy*)data);
+				break;
+			case ENEMY_TYPE_2:
+				this->enemyLayer->enemy2Blowup((Enemy*)data);
+				break;
+			case ENEMY_TYPE_3:
+				this->enemyLayer->enemy3Blowup((Enemy*)data);
+				break;
+			default:
+				break;
+		}
+	}
+	else if (tag_b == BULLET_TYPE)
+	{
+		Node* data = (Node*)sp_a->getUserData();
+		switch (tag_a)
+		{
+			case ENEMY_TYPE_1:
+				this->enemyLayer->enemy1Blowup((Enemy*)data);
+				break;
+			case ENEMY_TYPE_2:
+				this->enemyLayer->enemy2Blowup((Enemy*)data);
+				break;
+			case ENEMY_TYPE_3:
+				this->enemyLayer->enemy3Blowup((Enemy*)data);
+				break;
+			default:
+				break;
+		}
+	}
+
+	return true;
+}
+
+
+void GameLayer::onEnter() 
+{
+	Layer::onEnter();
+	auto listener =  EventListenerTouchOneByOne::create();//创建一个触摸监听
+	listener->setSwallowTouches(true);//设置是否向下传递触摸
+
+	listener->onTouchBegan = CC_CALLBACK_2(GameLayer::OnContactBegin, this);
+	listener->onTouchMoved = CC_CALLBACK_2(GameLayer::OnTouchMoved, this);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listener,10);
- }
+
+	auto listener_phy = EventListenerPhysicsContact::create();
+	listener_phy->onContactBegin = CC_CALLBACK_1(GameLayer::onContactBegin, this);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listener_phy, 20);
+}
 
 bool GameLayer::OnContactBegin(Touch* touch, Event* event)  
 {  
@@ -94,7 +153,7 @@ void GameLayer::OnTouchMoved(Touch* touch, Event* event)
 		  Point beginPoint=touch->getLocationInView(); 
 		  beginPoint=Director::sharedDirector()->convertToGL(beginPoint); 
 		  //juggle the area of drag 
-		  Rect planeRect=this->planeLayer->getChildByTag(ResourceGame::AIRPLANE)->boundingBox();
+		  Rect planeRect = this->planeLayer->getChildByTag(PLANE_TYPE)->boundingBox();
 		  planeRect.origin.x-=15;
 		  planeRect.origin.y-=15;
 		  planeRect.size.width+=30;
@@ -105,8 +164,9 @@ void GameLayer::OnTouchMoved(Touch* touch, Event* event)
 			  endPoint=Director::sharedDirector()->convertToGL(endPoint); 
 
 			  Point offSet =ccpSub(beginPoint,endPoint);
-			  Point toPoint=ccpAdd(this->planeLayer->getChildByTag(ResourceGame::AIRPLANE)->getPosition(),offSet); 
+			  Point toPoint = ccpAdd(this->planeLayer->getChildByTag(PLANE_TYPE)->getPosition(), offSet);
 			  this->planeLayer->MoveTo(toPoint); 
 		  } 
 	  } 
 }  
+

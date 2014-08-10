@@ -33,7 +33,17 @@ bool PlaneLayer::init()
 		SpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile(ResourceGame::shoot_list);
         Sprite* plane=Sprite::create(ResourceGame::hero_path);
         plane->setPosition(ccp(winSize.width/2,plane->getContentSize().height/2));//飞机放置在底部中央
-		this->addChild(plane,0,ResourceGame::AIRPLANE);//添加精灵，AIRPLANE是tag
+		
+		plane->setTag(PLANE_TYPE);
+		auto body = PhysicsBody::createCircle(plane->getContentSize().height/3);
+		body->setDynamic(false);
+
+		body->setCategoryBitmask(1);    // 0001
+		body->setCollisionBitmask(1);   // 0001
+		body->setContactTestBitmask(1); // 0001
+
+		plane->setPhysicsBody(body);
+		this->addChild(plane);//添加精灵，AIRPLANE是tag
  
         Blink *blink=Blink::create(1,3);//闪烁动画
  
@@ -44,7 +54,7 @@ bool PlaneLayer::init()
         animation->addSpriteFrame(sf_1);
         animation->addSpriteFrame(sf_2);
         Animate* animate=Animate::create(animation);//帧动画
-         
+
         plane->runAction(blink);//执行闪烁动画
         plane->runAction(RepeatForever::create(animate));// 执行帧动画
  
@@ -62,7 +72,7 @@ void PlaneLayer::MoveTo(Point location)
         //进行边界判断,不可超出屏幕  
         Point actualPoint;  
         Size winSize=Director::sharedDirector()->getWinSize();  
-        Size planeSize=this->getChildByTag(ResourceGame::AIRPLANE)->getContentSize();  
+		Size planeSize = this->getChildByTag(PLANE_TYPE)->getContentSize();
         if (location.x<planeSize.width/2)  
         {  
             location.x=planeSize.width/2;  
@@ -79,6 +89,6 @@ void PlaneLayer::MoveTo(Point location)
         {  
             location.y=winSize.height-planeSize.height/2;  
         }  
-        this->getChildByTag(ResourceGame::AIRPLANE)->setPosition(location);  
+		this->getChildByTag(PLANE_TYPE)->setPosition(location);
     }  
 }

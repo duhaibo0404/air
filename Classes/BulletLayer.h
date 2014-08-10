@@ -5,6 +5,7 @@
 
 USING_NS_CC;
 
+#pragma warning(disable:4996)
 class BulletLayer :public Layer
 {
 public:

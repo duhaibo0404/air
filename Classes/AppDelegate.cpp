@@ -1,6 +1,7 @@
 #include "AppDelegate.h"
 #include "GameLayer.h"
 #include "GameScene.h"
+#include "StartScene.h"
 
 USING_NS_CC;
 
@@ -31,10 +32,12 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // create a scene. it's an autorelease object
     //CCScene *pScene = GameLayer::scene();
-	Scene *pScene = GameScene::create();
-   
+	//Scene *pScene = GameScene::createWithPhysics();
+	Scene *pScene = StartScene::create();
+	//Scene *pScene = GameLayer::createSceneWithPhysics();
     // run
-    pDirector->runWithScene(pScene);
+	pDirector->runWithScene(pScene);
+
 
     return true;
 }

@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "PlaneLayer.h"
 #include "BulletLayer.h"
+#include "EnemyLayer.h"
 
 USING_NS_CC;
 
@@ -21,13 +22,15 @@ public:
     CREATE_FUNC(GameLayer); 
 	void OnTouchMoved(Touch* touch, Event* event);//´¥ÃþÒÆ¶¯µ÷ÓÃ	
     bool OnContactBegin(Touch* touch, Event* event); 
-
+	static int getCurLevel(){ return 0; }
+	bool onContactBegin(PhysicsContact& contact);
 public:
 	static cocos2d::Sprite* background1;
 	static cocos2d::Sprite* background2;
 
 	PlaneLayer* planeLayer;
 	BulletLayer* bulletLayer;
+	EnemyLayer* enemyLayer;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

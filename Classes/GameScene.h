@@ -14,11 +14,9 @@ public:
  
     ~GameScene(void);
  
-    CREATE_FUNC(GameScene);
-    static GameScene* createWithPhysics();//实现create函数
+	static GameScene* createWithPhysics();//实现create函数
  
-    virtual bool init();
+    virtual bool init() override;
  
     GameLayer* _gameLayer;//把GameLayer暴露给GameScene
- 
 };
