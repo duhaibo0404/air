@@ -43,9 +43,9 @@ bool PlaneLayer::init()
 		body->setContactTestBitmask(1); // 0001
 
 		plane->setPhysicsBody(body);
-		this->addChild(plane);//添加精灵，AIRPLANE是tag
+		this->addChild(plane);
  
-        Blink *blink=Blink::create(1,3);//闪烁动画
+        Blink *blink=Blink::create(1,3);
  
         Animation* animation=Animation::create();
         animation->setDelayPerUnit(0.1f);
