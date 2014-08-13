@@ -2,8 +2,10 @@
 #include "GameLayer.h"
 #include "GameScene.h"
 #include "StartScene.h"
+#include "C2DXShareSDK.h"
 
 USING_NS_CC;
+using namespace cn::sharesdk;
 
 AppDelegate::AppDelegate() {
 
@@ -14,6 +16,12 @@ AppDelegate::~AppDelegate()
 }
 
 bool AppDelegate::applicationDidFinishLaunching() {
+
+    //初始化ShareSDK
+    C2DXShareSDK::open(__String::create("api20"), false);
+    //初始化社交平台信息
+    this -> initPlatformConfig();
+
     // initialize director
     Director* pDirector = Director::getInstance();
 	GLView* pEGLView = pDirector->getOpenGLView();
@@ -56,4 +64,14 @@ void AppDelegate::applicationWillEnterForeground() {
 
     // if you use SimpleAudioEngine, it must resume here
     // SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+}
+
+void AppDelegate::initPlatformConfig()
+{
+    //新浪微博
+    __Dictionary *sinaConfigDict = __Dictionary::create();
+    sinaConfigDict -> setObject(__String::create("568898243"), "app_key");
+    sinaConfigDict -> setObject(__String::create("38a4f8204cc784f81f9f0daaf31e02e3"), "app_secret");
+    sinaConfigDict -> setObject(__String::create("http://www.sharesdk.cn"), "redirect_uri");
+    C2DXShareSDK::setPlatformConfig(C2DXPlatTypeSinaWeibo, sinaConfigDict);
 }

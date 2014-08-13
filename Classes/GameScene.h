@@ -19,4 +19,11 @@ public:
     virtual bool init() override;
  
     GameLayer* _gameLayer;
+
+    void authMenuItemClick(Ref* pSender);   
+    void cancelAuthMenuItemClick(Ref* pSender);    
+    void hasAuthMenuItemClick(Ref* pSender);    
+    void getUserInfoMenuItemClick(Ref* pSender);
+    void shareMenuItemClick(Ref* pSender);
+    void menuCloseCallback(Ref* pSender);
 };
